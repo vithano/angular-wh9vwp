@@ -35,10 +35,13 @@ import { animalList as animals } from "../../assets/animalList";
     width: 74px;
     height: 74px;
     z-index: 1;
+    
   }
   .spinAxis {
     width: min-content;
     position: relative;
+    
+    
   }`],
   animations: [
     trigger("spin", [
