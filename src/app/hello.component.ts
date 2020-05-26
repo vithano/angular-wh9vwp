@@ -20,23 +20,31 @@ import { colorMap } from "./avatar/colorMap";
 import { animalList as animals } from "../../assets/animalList";
 @Component({
   selector: 'hello',
-  template: `
-      <app-avatar [animal]="animal" [color]="color"></app-avatar>
-`,
-  styles: [`app-avatar {
-    width: 71px;
+  template: `<div
+      (click)="changeSpinAnimationState('active')"
+      [@spin]="currentSpinAnimState"
+      (@spin.done)="onAnimationDone($event)"
+      class="spinAxis"
+    >
+      <app-avatar [animal]="displayableData.animal" [color]="displayableData.color"></app-avatar>
+</div>
+      {{generatedName[0]}} {{generatedName[1]}}
+`
+,
+  styles: [`app-avatar{
+    width: 74px;
     height: 74px;
     z-index: 1;
   }
   .spinAxis {
-    width: fit-content;
+    width: min-content;
     position: relative;
   }`],
   animations: [
     trigger("spin", [
       transition("notActive => active", [
         animate(
-          "0.3s",
+          "0.5s",
           keyframes([
             style({
               transform: "rotate(0deg)",
@@ -51,10 +59,9 @@ import { animalList as animals } from "../../assets/animalList";
 })
 export class HelloComponent  {
 
-  color = "blue";
-  animal = "cat";
-    currentSpinAnimState = "notActive";
-  
+  generatedName = ["Blue","Cat"];
+  currentSpinAnimState = "notActive";
+  displayableData = {color:"blue",animal:"cat"};
 
 private customConfig: Config = {
     dictionaries: [colors, animals],
@@ -65,18 +72,19 @@ private customConfig: Config = {
 
   
 changeName() {
-    const generatedName = uniqueNamesGenerator(this.customConfig).split(
-      this.customConfig.separator
-    );
-    const color = generatedName[0];
-    const animal = generatedName[1];
-    this.animal = animal.toLowerCase();
-    this.color = colorMap[color.toLowerCase()];
-
+    this.generateName();
+    let color = colorMap[this.generatedName[0].toLowerCase()];
+    let animal = this.generatedName[1].toLowerCase();
+    this.displayableData = {color,animal};
     this.changeSpinAnimationState("notActive");
   }
   changeSpinAnimationState(state: string) {
     this.currentSpinAnimState = state;
+  }
+  generateName(){
+      this.generatedName = uniqueNamesGenerator(this.customConfig).split(
+      this.customConfig.separator
+    );
   }
   onAnimationDone(event: AnimationEvent) {
     if (event.toState == "active") {
